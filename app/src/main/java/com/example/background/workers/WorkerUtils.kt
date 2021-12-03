@@ -29,58 +29,8 @@ import java.io.FileOutputStream
 import java.io.IOException
 import java.util.UUID
 
+
 private const val TAG = "WorkerUtils"
-
-//Make BlurWorker and Add a constructor------------------------------------
-class BlurWorker(context: Context, params: WorkerParameters) :
-    Worker(context, params) {
-
-    //Override and implement doWork()--------------------------------------
-    override fun doWork(): Result {
-        val appContext = applicationContext
-        // ADD THIS LINE
-        val resourceUri = inputData.getString(KEY_IMAGE_URI)
-        makeStatusNotification("Blurring imag", appContext)
-        // ADD THIS TO SLOW DOWN THE WORKER--------------------------------
-        sleep()
-
-        return try {
-            if (TextUtils.isEmpty(resourceUri)) {
-                Log.e(TAG, "Invalid input uri")
-                throw IllegalArgumentException("Invalid input uri")
-            }
-
-            val resolver = appContext.contentResolver
-
-            val picture = BitmapFactory.decodeStream(
-                resolver.openInputStream(Uri.parse(resourceUri))
-            )
-
-            val output = blurBitmap(picture, appContext)
-
-            // Write bitmap to a temp file
-            val outputUri = writeBitmapToFile(appContext, output)
-
-            val outputData = workDataOf(KEY_IMAGE_URI to outputUri.toString())
-
-            Result.success(outputData)
-        } catch (throwable: Throwable) {
-            Log.e(TAG, "Error applying blur")
-            throwable.printStackTrace()
-            Result.failure()
-        }
-    }
-}
-
-/**
- * Create a Notification that is shown as a heads-up notification if possible.
- *
- * For this codelab, this is used to show a notification so that you know when different steps
- * of the background work chain are starting
- *
- * @param message Message shown on the notification
- * @param context Context needed to create Toast
- */
 fun makeStatusNotification(message: String, context: Context) {
 
     // Make a channel if necessary
@@ -137,8 +87,7 @@ fun blurBitmap(bitmap: Bitmap, applicationContext: Context): Bitmap {
 
         // Create the output bitmap
         val output = Bitmap.createBitmap(
-            bitmap.width, bitmap.height, bitmap.config
-        )
+            bitmap.width, bitmap.height, bitmap.config)
 
         // Blur the image
         rsContext = RenderScript.create(applicationContext, RenderScript.ContextType.DEBUG)

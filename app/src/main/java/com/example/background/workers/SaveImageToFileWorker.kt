@@ -14,15 +14,14 @@ import java.util.*
 
 
 private const val TAG = "SaveImageToFileWorker"
+class SaveImageToFileWorker(ctx: Context, params: WorkerParameters) : Worker(ctx, params) {
 
-class SaveImageToFileWorker(context:Context, params:WorkerParameters):
-Worker(context,params){
-
-    private val title = "Blurred Image"
+    private val Title = "Blurred Image"
     private val dateFormatter = SimpleDateFormat(
         "yyyy.MM.dd 'at' HH:mm:ss z",
         Locale.getDefault()
     )
+
     override fun doWork(): Result {
         // Makes a notification when the work starts and slows down the work so that
         // it's easier to see each WorkRequest start, even on emulated devices
@@ -35,7 +34,7 @@ Worker(context,params){
             val bitmap = BitmapFactory.decodeStream(
                 resolver.openInputStream(Uri.parse(resourceUri)))
             val imageUrl = MediaStore.Images.Media.insertImage(
-                resolver, bitmap, title, dateFormatter.format(Date()))
+                resolver, bitmap, Title, dateFormatter.format(Date()))
             if (!imageUrl.isNullOrEmpty()) {
                 val output = workDataOf(KEY_IMAGE_URI to imageUrl)
 
